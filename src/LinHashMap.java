@@ -93,7 +93,7 @@ public class LinHashMap <K, V>
     {
         Set <Map.Entry <K, V>> enSet = new HashSet <> ();
 
-        //  T O   B E   I M P L E M E N T E D
+        //  TODO 1   I M P L E M E N T E D
             
         return enSet;
     } // entrySet
@@ -107,7 +107,7 @@ public class LinHashMap <K, V>
     {
         int i = h (key);
 
-        //  T O   B E   I M P L E M E N T E D
+        //  TODO 2   I M P L E M E N T E D
 
         return null;
     } // get
@@ -123,7 +123,7 @@ public class LinHashMap <K, V>
         int i = h (key);
         out.println ("LinearHashMap.put: key = " + key + ", h() = " + i + ", value = " + value);
 
-        //  T O   B E   I M P L E M E N T E D
+        //  TODO 3   I M P L E M E N T E D
 
         return null;
     } // put
@@ -145,7 +145,7 @@ public class LinHashMap <K, V>
         out.println ("Hash Table (Linear Hashing)");
         out.println ("-------------------------------------------");
 
-        //  T O   B E   I M P L E M E N T E D
+        //  TODO 4   I M P L E M E N T E D
 
         out.println ("-------------------------------------------");
     } // print

@@ -9,6 +9,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.util.*;
 
+import static java.lang.Math.addExact;
 import static java.lang.Math.ceil;
 import static java.lang.System.out;
 
@@ -62,7 +63,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
         /****************************************************************************
          * Construct a node.
          * @param p       the order of the node (max refs)
-         * @param isLeaf  whether the node is a leaf
+         * @param _isLeaf  whether the node is a leaf
          */
         @SuppressWarnings("unchecked")
         Node (int p, boolean _isLeaf)
@@ -167,10 +168,49 @@ public class BpTreeMap <K extends Comparable <K>, V>
     {
         Set <Map.Entry <K, V>> enSet = new HashSet <> ();
 
-        //  T O   B E   I M P L E M E N T E D
-            
+        //TODO 1   I M P L E M E N T E D
+        addEntry(root, enSet);
         return enSet;
     } // entrySet
+
+    private void addEntry(Node n, Set <Map.Entry<K, V>> sets){
+        if(n.isLeaf){
+            for(int i = 0; i < n.nKeys; i++) {
+                sets.add(new MyEntry <> (n.key[i], (V)n.ref[i]));
+            }
+        }else{
+            for (int i = 0; i < n.nKeys + 1; i++) {
+                addEntry((Node) n.ref[i] , sets);
+            }
+        }
+    }
+
+    private class MyEntry<K, V> implements Entry<K, V> {
+
+        private K key;
+        private V value;
+
+        public MyEntry(K k, V v){
+            key = k;
+            value = v;
+        }
+        @Override
+        public K getKey() {
+            return key;
+        }
+
+        @Override
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public V setValue(V value) {
+            V oldval = this.value;
+            this.value = value;
+            return oldval;
+        }
+    }
 
     /********************************************************************************
      * Given the key, look up the value in the B+Tree map.
@@ -210,9 +250,20 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public K lastKey () 
     {
-        //  T O   B E   I M P L E M E N T E D
+        //TODO 2  I M P L E M E N T E D
+        K lastKey = firstKey();
+        Set set = entrySet();
 
-        return null;
+        // Get an iterator
+        Iterator i = set.iterator();
+
+        // find largest key
+        while(i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            if(lastKey.compareTo((K) me.getKey()) < 0)
+                lastKey = (K) me.getKey();
+        }
+        return lastKey;
     } // lastKey
 
     /********************************************************************************
@@ -221,9 +272,20 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public SortedMap <K,V> headMap (K toKey)
     {
-        //  T O   B E   I M P L E M E N T E D
+        //TODO 3  I M P L E M E N T E D
+        BpTreeMap<K, V> headbpt = new BpTreeMap<>( classK, classV);
+        Set set = entrySet();
+        Iterator i = set.iterator();
 
-        return null;
+        // find largest key
+        while(i.hasNext()) {
+            Map.Entry me = (Map.Entry) i.next();
+            if (toKey.compareTo((K) me.getKey()) > 0)
+                headbpt.put((K) me.getKey(), (V) me.getValue());
+
+        }
+
+        return headbpt;
     } // headMap
 
     /********************************************************************************
@@ -232,9 +294,19 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public SortedMap <K,V> tailMap (K fromKey)
     {
-        //  T O   B E   I M P L E M E N T E D
+        //TODO 4  I M P L E M E N T E D
+        BpTreeMap<K, V> tailbpt = new BpTreeMap<>( classK, classV);
+        Set set = entrySet();
+        Iterator i = set.iterator();
 
-        return null;
+        // find largest key
+        while(i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            if(fromKey.compareTo((K) me.getKey()) <= 0)
+                tailbpt.put((K) me.getKey(),(V) me.getValue());
+        }
+
+        return tailbpt;
     } // tailMap
 
     /********************************************************************************
@@ -244,9 +316,19 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public SortedMap <K,V> subMap (K fromKey, K toKey)
     {
-        //  T O   B E   I M P L E M E N T E D
+        //TODO 5   I M P L E M E N T E D
+        BpTreeMap<K, V> midbpt = new BpTreeMap<>( classK, classV);
+        Set set = entrySet();
+        Iterator i = set.iterator();
 
-        return null;
+        // find largest key
+        while(i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            if(fromKey.compareTo((K) me.getKey()) <= 0 && toKey.compareTo((K) me.getKey()) > 0)
+                midbpt.put((K) me.getKey(),(V) me.getValue());
+        }
+
+        return midbpt;
     } // subMap
 
     /********************************************************************************
@@ -335,7 +417,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
             rt = insert (key, ref, (Node) n.ref[i]);                         // recursive call to insert
             if (DEBUG) out.println ("insert: handle internal node level");
 
-                //  T O   B E   I M P L E M E N T E D
+                //TODO 6   I M P L E M E N T E D
 
         } // if
 
@@ -408,7 +490,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
 
     /********************************************************************************
      * The main method used for testing.
-     * @param  the command-line arguments (args[0] gives number of keys to insert)
+     * @param args The command-line arguments (args[0] gives number of keys to insert)
      */
     public static void main (String [] args)
     {
@@ -431,6 +513,22 @@ public class BpTreeMap <K extends Comparable <K>, V>
         } // for
         out.println ("-------------------------------------------");
         out.println ("Average number of nodes accessed = " + bpt.count / (double) totalKeys);
+
+        Set set = bpt.entrySet();
+
+        // Get an iterator
+        Iterator i = set.iterator();
+
+        // Display elements
+        while(i.hasNext()) {
+            Map.Entry me = (Map.Entry)i.next();
+            System.out.print(me.getKey() + ": ");
+            System.out.println(me.getValue());
+        }
+        System.out.println();
+        System.out.println(bpt.firstKey());
+        System.out.println(bpt.lastKey());
+
     } // main
 
 } // BpTreeMap class
