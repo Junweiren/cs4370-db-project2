@@ -307,7 +307,8 @@ public class LinHashMap <K, V>
      */
     private int h (Object key)
     {
-            return key.hashCode () % mod1;
+//            return key.hashCode () % mod1;
+            return Math.abs(key.hashCode () % mod1);
     } // h
     /********************************************************************************
      * Hash the key using the high resolution hash function.
@@ -316,7 +317,8 @@ public class LinHashMap <K, V>
      */
     private int h2 (Object key)
     {
-            return key.hashCode () % mod2;
+//            return key.hashCode () % mod2;
+            return Math.abs(key.hashCode () % mod2);
     } // h2
 
     /********************************************************************************
