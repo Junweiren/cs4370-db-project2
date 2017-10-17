@@ -416,8 +416,21 @@ public class BpTreeMap <K extends Comparable <K>, V>
             int i = n.find (key);                                            // find "<=" position
             rt = insert (key, ref, (Node) n.ref[i]);                         // recursive call to insert
             if (DEBUG) out.println ("insert: handle internal node level");
-
                 //TODO 6   I M P L E M E N T E D
+            Node lnode = (Node) n.ref[i];
+            if(rt == null) {
+                return null;
+            }
+                if (n.nKeys < ORDER - 1) {            // if the node is not full call wedge
+                    wedge(lnode.key[lnode.nKeys-1], rt, n, i, false);
+                } else {
+                    Node nrt = split(lnode.key[lnode.nKeys-1], rt, n, false);
+                    if(n == root && nrt != null){
+                        root = makeRoot(n, n.key[n.nKeys-1], nrt);
+                        return null;
+                    }
+                }
+
 
         } // if
 
@@ -494,7 +507,7 @@ public class BpTreeMap <K extends Comparable <K>, V>
      */
     public static void main (String [] args)
     {
-        int totalKeys    = 14;                    
+        int totalKeys    = 40;
         boolean RANDOMLY = false;
 
         BpTreeMap <Integer, Integer> bpt = new BpTreeMap <> (Integer.class, Integer.class);
