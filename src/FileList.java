@@ -15,8 +15,8 @@ import java.util.*;
  * tuple be packed into a fixed length byte array.
  */
 public class FileList
-       extends AbstractList <Comparable []>
-       implements List <Comparable []>, RandomAccess
+        extends AbstractList <Comparable []>
+        implements Serializable, List <Comparable []>, RandomAccess
 {
     /** File extension for data files.
      */
@@ -38,15 +38,23 @@ public class FileList
      */
     private int nRecords = 0;
 
+    /** Array of attribute domains: a domain may be
+     *  integer types: Long, Integer, Short, Byte
+     *  real types: Double, Float
+     *  string types: Character, String
+     */
+    private final Class [] domain;
+
     /***************************************************************************
      * Construct a FileList.
      * @param _tableName   the name of the table
      * @param _recordSize  the size of tuple in bytes.
      */
-    public FileList (String _tableName, int _recordSize)
+    public FileList (String _tableName, int _recordSize, Class [] _domain)
     {
         tableName  = _tableName;
         recordSize = _recordSize;
+        domain = _domain;
 
         try {
             file = new RandomAccessFile (tableName + EXT, "rw");
@@ -67,14 +75,18 @@ public class FileList
     {
         byte [] record = null;  // FIX: table.pack (tuple);
 
+        record = Table.convertTupleToByteArray(tuple, recordSize, domain);
         if (record.length != recordSize) {
             out.println ("FileList.add: wrong record size " + record.length);
             return false;
         } // if
 
-             //-----------------\\
-            // TO BE IMPLEMENTED \\
-           //---------------------\\
+        try {
+            file.seek(nRecords * recordSize);
+            file.write(record);
+            nRecords++;
+        } catch (IOException e) {
+        }
 
         return true;
     } // add
@@ -89,11 +101,13 @@ public class FileList
     {
         byte [] record = new byte [recordSize];
 
-             //-----------------\\
-            // TO BE IMPLEMENTED \\
-           //---------------------\\
+        try {
+            file.seek(i * recordSize);
+            file.read(record);
+        } catch (IOException e) {
+        }
 
-        return null;   // FIX: table.unpack (record);
+        return Table.convertByteArrayToTuple(record, recordSize, domain);   // FIX: table.unpack (record);
     } // get
 
     /***************************************************************************
@@ -118,4 +132,3 @@ public class FileList
     } // close
 
 } // FileList class
-
